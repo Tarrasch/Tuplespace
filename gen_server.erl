@@ -1,4 +1,4 @@
--module(server1).
+-module(gen_server).
 -export([start/2,rpc/2]).
 
 start(Name,Mod) ->
