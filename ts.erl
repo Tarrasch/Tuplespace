@@ -1,5 +1,4 @@
 -module(ts).
-%-import(gen_server, [start/2, rpc/2]).
 -export([new/0, in/2, out/2, match/2]).
 
 % --------------------------  EXTERNAL FUNCTIONS  ------------------------------
@@ -25,12 +24,6 @@ match([P|PS],[L|LS]) -> case match(P,L) of
 match(P,P) -> true;
 match(_,_) -> false.
 
-%pattern_exists(Pattern, List) ->
-%    case search_match(Pattern, List) of
-%        {found, _ } -> true;
-%        _           -> false
-%    end.
-
 search_match(Pattern, List) -> sm_help(Pattern, List, []).
 
 sm_help(Pattern, [Tuple | ListL], ListR) -> 
@@ -42,16 +35,8 @@ sm_help(_, [], ListR) -> {not_found, ListR}.
 
 % --------------------------  INTERNAL GEN-SERVER FUNCTIONS  ------------------------------
 init() -> [].
-%interpret_msg({find_matching, Pattern}, State) -> 
-%    case search_match(Pattern, State) of
-%        {found, Tuple, State2} -> State2;
-%        {not_found, State}     -> State
-%    end;
 interpret_msg({add_tuple, Tuple}, State) -> [Tuple | State];
 interpret_msg(_,State) -> State.
-
-%can_handle({find_matching, Pattern}, State) -> pattern_exists(Pattern, State);
-%can_handle(_,_) -> true.
 
 % --------------------------  SERVER FUNCTIONS  ------------------------------
 
