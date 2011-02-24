@@ -3,22 +3,24 @@
 
 start(Name,Mod) ->
     spawn(fun() ->
-		  register(Name,self()),
-		  server(Name,Mod,Mod:init())
+		  %register(Name,self()),
+		  server(Name,Mod,Mod:init(),[])
 	  end).
 
-server(Name,Mod,State) ->
+server(Name,Mod2,State2,Askers2) ->
+    {Mod, State, Askers} = answer_askers(Mod,State,Askers),
+    reply(Name,Pid,{ok,Reply}),
     receive
 	{Pid,Msg} ->
-	    case catch Mod:handle(Msg,State) of
-		{'EXIT',Reason} ->
-		    reply(Name,Pid,{crash,Reason}),
-		    server(Name,Mod,State);
-		{Reply,NewState} ->
-		    reply(Name,Pid,{ok,Reply}),
-		    server(Name,Mod,NewState)
-	    end
+        newState = Mod:handle(Msg,State);
+        server(Name,Mod,NewState,[{Pid, Msg} | Askers])
+	    end;
     end.
+
+answer_askers(Mod,State,Askers) -> aa_help(Mod,State,Askers, [])
+
+aa_help(Mod,State,[{Pid, Msg} | },AskersR) -> aa_help(Mod,State,Askers)
+    
 
 rpc(Name,Msg) ->
     Name ! {self(), Msg},
