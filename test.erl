@@ -3,7 +3,7 @@
 -import(
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-linda  % <-- CHANGE THIS TO YOUR TUPLESPACE MODULE NAME 
+ts  % <-- CHANGE THIS TO YOUR TUPLESPACE MODULE NAME 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ,[in/2,out/2,new/0]
 ). 
