@@ -24,10 +24,14 @@ match([P|PS],[L|LS]) -> case match(P,L) of
 match(P,P) -> true;
 match(_,_) -> false.
 
+% The empty Tuple-container (This exists for modularity)
 init() -> [].
 
+% Search a Pattern in a Tuple-container.
+% Returns: (See implementation)
 search_match(Pattern, List) -> sm_help(Pattern, List, []).
 
+% Help for search_match
 sm_help(Pattern, [Tuple | ListL], ListR) -> 
     case match(Pattern, Tuple) of
         true -> {found, Tuple, ListL ++ ListR};
