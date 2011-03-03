@@ -12,6 +12,7 @@ test() ->
     link(TS),
     io:format("TEST: new tuplespace TS created~n", []),
 
+    % Test 1
     Slave1 = spawn_in_test(TS, {fish,any}),
     Slave2 = spawn_in_test(TS, {fowl,any}),
 
@@ -24,7 +25,17 @@ test() ->
 
     replytest(Slave1, {fish,any}, {fish,salmon}),
     sleep(Delay),
-    end.
+
+    % Test 2, see in uses BIFs indeed
+    Slave3 = spawn_in_test(TS, any),
+    Slave3 ! {TS, you_should_not_revieve_this},
+
+    sleep(Delay),
+
+    out_test(TS, anything),
+    replytest(Slave3, any, anything).
+
+
 
 %%% Helper functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
