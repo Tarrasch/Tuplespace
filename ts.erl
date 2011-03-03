@@ -16,7 +16,7 @@ out(TS,Tuple) -> rpc(TS, {add_tuple, Tuple}).
 % True if value matches pattern
 match(any,_) -> true;
 match(P,Q) when is_tuple(P), is_tuple(Q)
-                -> match(tuple_to_list(P),tuple_to_list(Q));
+           -> match(tuple_to_list(P),tuple_to_list(Q));
 match([P|PS],[L|LS]) -> case match(P,L) of
                               true -> match(PS,LS); 
                               false -> false
@@ -42,13 +42,13 @@ interpret_msg(_,State) -> State.
 
 start() ->
     spawn(fun() ->
-		  server(init(),[])
-	  end).
+          server(init(),[])
+      end).
 
 server(State2,Askers2) ->
     {State, Askers} = answer_askers(State2,Askers2),
     receive
-	{Pid,Msg} ->
+    {Pid,Msg} ->
         NewState = interpret_msg(Msg,State),
         server(NewState,[{Pid, Msg} | Askers])
     end.
@@ -72,7 +72,7 @@ aa_help(State,[],AskersR) -> {State, AskersR}.
 rpc(Name,Msg) ->
     Name ! {self(), Msg},
     receive 
-	    {Name,Reply} -> Reply
+        {Name,Reply} -> Reply
     end.
 
 reply(Pid,Reply) ->
