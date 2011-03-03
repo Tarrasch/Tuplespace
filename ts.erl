@@ -59,9 +59,9 @@ start() ->
 server(State2,Askers2) ->
     {State, Askers} = answer_askers(State2,Askers2),
     receive
-    {Pid,Msg} ->
+    {Pidr,Msg} ->
         NewState = eventual_append(Msg,State),
-        server(NewState,[{Pid, Msg} | Askers])
+        server(NewState,[{Pidr, Msg} | Askers])
     end.
 
 % Reply the askers that we can by now and return a new
@@ -69,14 +69,14 @@ server(State2,Askers2) ->
 answer_askers(State,Askers) -> aa_help(State,Askers, []).
 
 % Helpfunction for answer_askers
-aa_help(State,[{Pid, {find_matching, Pattern}} | AskersL ],AskersR) -> 
+aa_help(State,[{Pidr, {find_matching, Pattern}} | AskersL ],AskersR) -> 
     case search_match(Pattern, State) of
-        {found, Tuple, NewState} -> reply(Pid,Tuple),
+        {found, Tuple, NewState} -> reply(Pidr,Tuple),
                                     aa_help(NewState, AskersL, AskersR);
-        {not_found, State}       -> aa_help(State, AskersL, [{Pid, {find_matching, Pattern}} | AskersR]) 
+        {not_found, State}       -> aa_help(State, AskersL, [{Pidr, {find_matching, Pattern}} | AskersR]) 
     end;
-aa_help(State,[{Pid, {add_tuple, _Tuple}} | AskersL ],AskersR) -> 
-    reply(Pid, ok),
+aa_help(State,[{Pidr, {add_tuple, _Tuple}} | AskersL ],AskersR) -> 
+    reply(Pidr, ok),
     aa_help(State,AskersL, AskersR);
 aa_help(State,[A | AskersL],AskersR) -> 
     io:format("Unable to interpret msg ~c",[A]),
@@ -86,12 +86,13 @@ aa_help(State,[],AskersR) -> {State, AskersR}.
 % Send a message to a tuplespace, this function makes sure the message gets
 % sent with the correct tule-conventions the server uses.
 rpc(Name,Msg) ->
-    Name ! {self(), Msg},
+    Ref = make_ref(),
+    Name ! {{self(), Ref}, Msg},
     receive 
-        {Name,Reply} -> Reply
+        {{Name, Ref}, Reply} -> Reply
     end.
 
 % Internal function of server to reply client, makes sure reply has 
 % a format rpc() recognizes.
-reply(Pid,Reply) ->
-    Pid ! {self(),Reply}.
+reply({Pid, Ref},Reply) ->
+    Pid ! {{self(), Ref},Reply}.
