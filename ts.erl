@@ -24,6 +24,8 @@ match([P|PS],[L|LS]) -> case match(P,L) of
 match(P,P) -> true;
 match(_,_) -> false.
 
+init() -> [].
+
 search_match(Pattern, List) -> sm_help(Pattern, List, []).
 
 sm_help(Pattern, [Tuple | ListL], ListR) -> 
@@ -34,17 +36,22 @@ sm_help(Pattern, [Tuple | ListL], ListR) ->
 sm_help(_, [], ListR) -> {not_found, ListR}.
 
 % --------------------------  INTERNAL GEN-SERVER FUNCTIONS  ------------------------------
-init() -> [].
+
+% Interpret message, if the message was an add_tuple
+% return a new state with the Tuple appended.
 eventual_append({add_tuple, Tuple}, State) -> [Tuple | State];
 eventual_append(_,State) -> State.
 
 % --------------------------  SERVER FUNCTIONS  ------------------------------
 
+% Spawn a tuplespace with correct arguments
 start() ->
     spawn(fun() ->
           server(init(),[])
       end).
 
+% Serverloop
+% Carries the state and the list of answered askers.
 server(State2,Askers2) ->
     {State, Askers} = answer_askers(State2,Askers2),
     receive
@@ -53,8 +60,11 @@ server(State2,Askers2) ->
         server(NewState,[{Pid, Msg} | Askers])
     end.
 
+% Reply the askers that we can by now and return a new
+% uppdated list of answered askers.
 answer_askers(State,Askers) -> aa_help(State,Askers, []).
 
+% Helpfunction for answer_askers
 aa_help(State,[{Pid, {find_matching, Pattern}} | AskersL ],AskersR) -> 
     case search_match(Pattern, State) of
         {found, Tuple, NewState} -> reply(Pid,Tuple),
@@ -69,11 +79,15 @@ aa_help(State,[A | AskersL],AskersR) ->
     aa_help(State,AskersL,AskersR);
 aa_help(State,[],AskersR) -> {State, AskersR}.
 
+% Send a message to a tuplespace, this function makes sure the message gets
+% sent with the correct tule-conventions the server uses.
 rpc(Name,Msg) ->
     Name ! {self(), Msg},
     receive 
         {Name,Reply} -> Reply
     end.
 
+% Internal function of server to reply client, makes sure reply has 
+% a format rpc() recognizes.
 reply(Pid,Reply) ->
     Pid ! {self(),Reply}.
