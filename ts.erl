@@ -35,8 +35,8 @@ sm_help(_, [], ListR) -> {not_found, ListR}.
 
 % --------------------------  INTERNAL GEN-SERVER FUNCTIONS  ------------------------------
 init() -> [].
-interpret_msg({add_tuple, Tuple}, State) -> [Tuple | State];
-interpret_msg(_,State) -> State.
+eventual_append({add_tuple, Tuple}, State) -> [Tuple | State];
+eventual_append(_,State) -> State.
 
 % --------------------------  SERVER FUNCTIONS  ------------------------------
 
@@ -49,7 +49,7 @@ server(State2,Askers2) ->
     {State, Askers} = answer_askers(State2,Askers2),
     receive
     {Pid,Msg} ->
-        NewState = interpret_msg(Msg,State),
+        NewState = eventual_append(Msg,State),
         server(NewState,[{Pid, Msg} | Askers])
     end.
 
