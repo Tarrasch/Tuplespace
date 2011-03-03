@@ -33,10 +33,26 @@ test() ->
     sleep(Delay),
 
     out_test(TS, anything),
-    replytest(Slave3, any, anything).
+    replytest(Slave3, any, anything),
 
+    % Test 3, test to send different tuples-types
 
+    Slave4 = spawn_in_test(TS, [a,b,any]),
+    Slave5 = spawn_in_test(TS, [any,c]),
+    Slave6 = spawn_in_test(TS, {a,any,c}),
 
+    sleep(Delay),
+    out_test(TS, {a, b, c}),
+    sleep(Delay),
+    replytest(Slave6, {a, any, c}, {a, b, c}),
+    sleep(Delay),
+    out_test(TS, [a, b, orangutang]), 
+    out_test(TS, [{[{[{[{yooo}]}]}]}, c]), 
+    sleep(Delay),
+    replytest(Slave5, [any, c], [{[{[{[{yooo}]}]}]}, c]),
+    replytest(Slave4, [a, b, any], [a, b, orangutang]),
+
+    ok.
 %%% Helper functions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 sleep(T) ->
