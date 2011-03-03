@@ -122,13 +122,13 @@ slave(T, {Pid,Item}) ->
 replytest(Slave, Pat, Tup) -> 
     io:format("Process ~w~n", [Slave]),
     receive
-	{Slave,Tup} ->
-	    io:format("     Correct. in operation: ~w returned tuple: ~w~n", [Pat, Tup]);
+	    {Slave,Tup} ->
+	        io:format("     Correct. in operation: ~w returned tuple: ~w~n", [Pat, Tup]);
         {Slave,Bad} ->
-	    io:format("     Error. in with pattern: ~w returned tuple: ~w~n", [Pat, Bad])
+	        io:format("     Error. in with pattern: ~w returned tuple: ~w~n", [Pat, Bad])
     after 
         5000 ->   
-	    io:format("     Error. No response for in operation with pattern: ~w~n", [Pat])
+	        io:format("     Error. No response for in operation with pattern: ~w~n", [Pat])
     end.
 
 collect_exits([]) ->
