@@ -50,7 +50,7 @@ eventual_append(_,State) -> State.
 
 % Spawn a tuplespace with correct arguments
 start() ->
-    spawn(fun() ->
+    spawn_link(fun() ->
           server(init(),[])
       end).
 

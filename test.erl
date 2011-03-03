@@ -115,7 +115,7 @@ spawn_in_test(Tuplespace, Pat) ->
 %% Get a tuple matching Item from Tuplespace T and send it to Pid
 slave(T, {Pid,Item}) ->
     case in(T, Item) of
-	R -> Pid!{self(), R}
+	    R -> Pid!{self(), R}
     end.
 
 %% Tests whether the reply from a Slave task matches the expected Tuple
